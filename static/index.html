@@ -5,6 +5,7 @@
     <meta charset="utf-8" /> 
     <meta content='width=device-width; height=device-height; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
     <meta name="viewport" content="width=device-width" />
+    <script src="randgen.js"></script>
     <meta name="license" content="
         Copyright 2013 Abram Hindle
         
@@ -22,7 +23,7 @@
     "/>
     <script src="json2.js"></script>
   </head> 
-  <body bgcolor="black" height="100%" width="100%"> 
+  <body background-color="white" height="100%" width="100%"> 
     <canvas id="c" width="100%" height="100%" style="-webkit-tap-highlight-color: transparent;"></canvas> 
     <script>
 var canvas = document.getElementById('c');
@@ -54,20 +55,77 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
 
 
 world = {};
+function mean(num1, num2) {
+    var total = num1+num2;
+    return total /2;
+}
+
+
+function makeShape(x, y, radius){
+    let innerx = x-radius;
+    let innery= y-radius;
+    var points = [x+(radius*.5), y-radius]
+            return [
+              [x+(radius*.5), y-radius],
+              [x+(radius), y-(radius*.5)],
+              [x+radius, y+(radius*.45)],
+              [x+(radius*.5), y+radius],
+              [x-(radius*.5), y+(radius)],
+              [x-radius, y+(radius*.55)],
+              [x-radius, y-(radius*.4)],
+              [x-(radius*.4), y-(radius)],
+            ]
+          }
+function deform(shape){
+            let newPoints = [],
+              midX, midY, rangeX, rangeY;
+            for(let p=0; p<shape.length; p++){
+                newPoints.push(shape[p]);
+                endp = (p==shape.length)? p+1 : 0;
+ {
+                midX = mean(shape[p][0], shape[endp][0]);
+                midY = mean(shape[p][1], shape[endp][1]);
+                rangeX = Math.abs(shape[p][0]-shape[endp][0]);
+                rangeY = Math.abs(shape[p][1]-shape[endp][1]);
+                }
+              let newX = Math.floor((Math.random() * rangeX) + midX),
+            newY = Math.floor((Math.random() * rangeY) + midY);
+              newPoints.push([newX, newY]);
+            }
+            newPoints.push(shape[0]);
+            return newPoints;
+}
+
+function draw(context, shape){
+            context.beginPath();
+            context.moveTo(shape[0][0], shape[0][1]);
+            for(let i=1; i<shape.length; i++){
+              context.lineTo(shape[i][0], shape[i][1]);
+            }
+            context.fillStyle = '#f00';
+            context.closePath();
+            context.fill();
+}
+
+
+
 
 //XXX: TODO Make this prettier!
 function drawCircle(context,entity) {
     with(context) {
-        beginPath();              
-        lineWidth = 3;
+
         var x = entity["x"];
         var y = entity["y"];
-        //moveTo(x,y);
-        fillStyle = entity["colour"];
-        strokeStyle = fillStyle;
-        arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
-        stroke();                                
-    }
+        console.log(x, y, 50);
+        let shape = makeShape(x, y, 50);
+        console.log(shape);
+        for (let i = 0; i<3; i++){
+        shape = deform(shape);
+        }
+        console.log(shape);
+        draw(context, shape);
+}
+                            
 }
 
 function prepEntity(entity) {
