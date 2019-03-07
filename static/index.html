@@ -113,17 +113,21 @@ function draw(context, shape){
 //XXX: TODO Make this prettier!
 function drawCircle(context,entity) {
     with(context) {
-
+        if ( !("shape" in entity)){
         var x = entity["x"];
         var y = entity["y"];
         console.log(x, y, 50);
-        let shape = makeShape(x, y, 50);
+        let shape = makeShape(x, y, 30);
         console.log(shape);
         for (let i = 0; i<3; i++){
         shape = deform(shape);
+        entity['rendered']= 'true';
+        entity['shape'] = shape;
         }
-        console.log(shape);
-        draw(context, shape);
+    }
+
+        console.log(entity['shape']);
+        draw(context, entity['shape']);
 }
                             
 }
@@ -305,15 +309,15 @@ mouse = (function() {
 // Add the application specific mouse listeners!
 //XXX: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'blue', 'rendered':'false'});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'red','rendered':'false'});
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green',
+    addEntityWithoutName({'x':x,'y':y,'colour':'green','rendered':'false',
                           'radius':10});
 });
 
