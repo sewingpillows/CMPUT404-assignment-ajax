@@ -5,9 +5,9 @@
     <meta charset="utf-8" /> 
     <meta content='width=device-width; height=device-height; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
     <meta name="viewport" content="width=device-width" />
-    <script src="randgen.js"></script>
+
     <meta name="license" content="
-        Copyright 2013 Abram Hindle
+        Copyright 2013 Abram Hindle, Copyright 2019 Allison Boukall
         
         Licensed under the Apache License, Version 2.0 (the "License");
         you may not use this file except in compliance with the License.
@@ -25,6 +25,10 @@
   </head> 
   <body background-color="white" height="100%" width="100%"> 
     <canvas id="c" width="100%" height="100%" style="-webkit-tap-highlight-color: transparent;"></canvas> 
+    <div style="display:none;">
+        <img id="blubber" src="blubber.png" width="100" height="76">
+        <img id="angler" src="angler.png" width="100" height="76">
+      </div>
     <script>
 var canvas = document.getElementById('c');
 var host = window.location.host;
@@ -57,117 +61,47 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
     xhr.setRequestHeader('Content-type', 'application/json');
     xhr.setRequestHeader('Accept', 'application/json');
     xhr.send(JSON.stringify(objects));
-    //XXX: POST to a URL
-    //XXX: set the mimetype and the accept headers!
-    // Remember to use application/json !
 }
 
 
 world = {};
-function mean(num1, num2) {
-    var total = num1+num2;
-    return total /2;
+
+function randomBubble(x, y, radius){
+
+
 }
 
 
-function makeShape(x, y, radius){
-    let innerx = x-radius;
-    let innery= y-radius;
-    var points = [x+(radius*.5), y-radius]
-            return [
-              [x+(radius*.5), y-radius],
-              [x+(radius), y-(radius*.5)],
-              [x+radius, y+(radius*.45)],
-              [x+(radius*.5), y+radius],
-              [x-(radius*.5), y+(radius)],
-              [x-radius, y+(radius*.55)],
-              [x-radius, y-(radius*.4)],
-              [x-(radius*.4), y-(radius)],
-            ]
-          }
-function deform(shape){
-            let newPoints = [],
-              midX, midY, rangeX, rangeY;
-            for(let p=0; p<shape.length; p++){
-                newPoints.push(shape[p]);
-                endp = (p==shape.length-1)? 0 : p+1;
-                midX = mean(shape[p][0], shape[endp][0]);
-                midY = mean(shape[p][1], shape[endp][1]);
-                rangeX = Math.abs(shape[p][0]-shape[endp][0]);
-                rangeY = Math.abs(shape[p][1]-shape[endp][1]);
-            
-              let newX = Math.floor((Math.random() * rangeX) + midX),
-            newY = Math.floor((Math.random() * rangeY) + midY);
-              newPoints.push([newX, newY]);
-            }
-            newPoints.push(shape[0]);
-            return newPoints;
-}
-
-function draw(context, shape){
-            context.beginPath();
-            context.moveTo(shape[0][0], shape[0][1]);
-            for(let i=1; i<shape.length; i++){
-              context.lineTo(shape[i][0], shape[i][1]);
-            }
-            context.fillStyle = '#f00';
-            context.closePath();
-            context.fill();
-}
-
-
-function rotatefunc(x, y, angle, shape) {
-    let newPoints = [];
-  var s = Math.sin(angle);
-  var c = Math.cos(angle);
-  for(let p=0; p<shape.length; p++){
-
-
-  // translate point back to origin:
-  p[0] -= x;
-  p[1] -= y;
-
-  // rotate point
-  var xnew = p[0] * c - p[1] * s;
-  var ynew = p[0] * s + p[1]* c;
-
-  // translate point back:
-  p[0] = xnew + x;
-  p[1] = ynew + c;
-
-  newPoints.push([p[0], p[1]]);
-  }
-  return newPoints;
-}
-
-
-//XXX: TODO Make this prettier!
+//Funny fish theme
 function drawCircle(context,entity) {
     var x = entity["x"];
     var y = entity["y"];
     with(context) {
-        if ( !("shape" in entity)){
-
-        console.log(x, y, 50);
-        let shape = makeShape(x, y, 30);
-        console.log(shape);
-        for (let i = 0; i<8; i++){
-            shape = deform(shape);
+        if (entity["fish"] == "angler") {
+            context.drawImage(document.getElementById('angler'), x, y,140,  100);
         }
-
-        entity['rendered']= 'true';
-       
-        entity['shape'] = shape;
-
+        if (entity["fish"] == "bubble"){
+            context.beginPath();
+            context.strokeStyle = '#cbe2ef';
+            context.lineWidth = 1;
+            context.arc(x, y, entity['radius'] - 2.4, 0, Math.PI*1.5, true);
+            context.stroke();
+            context.beginPath();
+            context.arc(x, y, entity['radius'], 0, Math.PI*2, false);
+            context.stroke();
+    
+        }
+        if (entity["fish"] == "bubble"){
+            context.drawImage(document.getElementById('blubber'), x, y,100, 60);
+        }
     }  
-        context.globalAlpha = 0.2;
-        draw(context, entity['shape']);
+   
 }                   
-}
+
 
 function prepEntity(entity) {
-    if (!entity["colour"]) {
-        entity["colour"] = "#FF0000";
+    if (!entity["fish"]) {
+        entity["fish"] = "angler";
     }
     if (!entity["radius"]) {
         entity["radius"] = 50;
@@ -347,18 +281,17 @@ mouse = (function() {
     return self;
 })();
 
-// Add the application specific mouse listeners!
-//XXX: TODO Make these prettier!
+
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'blue', 'rendered':'false'});
+    addEntityWithoutName({'x':x,'y':y,'fish':'blubber'});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red','rendered':'false'});
+    addEntityWithoutName({'x':x,'y':y,'fish':'angler'});
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green','rendered':'false',
+    addEntityWithoutName({'x':x,'y':y,'fish':'bubble',
                           'radius':10});
 });
 
