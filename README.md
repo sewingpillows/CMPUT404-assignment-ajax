@@ -9,6 +9,9 @@ Make a shared state AJAX drawing program
 
 Create a deep sea canvas with blobfish, anglerfish and bubbles!<br>
 
+![My image](https://raw.githubusercontent.com/sewingpillows/CMPUT404-assignment-ajax/master/screenshot.png)
+
+
 Contributors / Licensing
 ========================
 
@@ -16,9 +19,10 @@ Generally everything is LICENSE'D under the Apache 2 license by Allison Boukall<
 All images created by Allison Boukall
 
 
-Bubble inspiration - Codepen under MIT license<br>
-https://codepen.io/MarioD/ - Mariusz Dabrowski<br>
-Came from https://codepen.io/MarioD/pen/gWregQ<br>
+Bubble inspiration - <br>
+Codepen under MIT license<br>
+AUTHOR: https://codepen.io/MarioD/ - Mariusz Dabrowski<br>
+SOURCE: Came from https://codepen.io/MarioD/pen/gWregQ<br>
 
 
 
