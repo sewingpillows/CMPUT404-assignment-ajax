@@ -79,33 +79,31 @@ def hello():
 def update(entity):
     '''update the entities via this interface'''
     data = flask_post_json()
-    for key,val in data.items():
-        app.logger.info(entity, key, val)
-        myWorld.update(entity, key, val)
-    return json.dumps(myWorld.get(entity))
+    myWorld.set( entity,data)
+    return json.dumps(myWorld.get(entity)), 200
 
 @app.route("/world", methods=['POST','GET'])    
 def world():
     if (request.method=='GET'):
-        return json.dumps(myWorld.world())
+        return json.dumps(myWorld.world()), 200
     if (request.method == 'POST'):
         data = flask_post_json()
         for entity,vals in data.items():
-            app.logger.info(entity, vals)
+            app.logger.info(entity, vals) 
             for key, val in vals.items():
                 myWorld.update(entity, key, val)
-    return json.dumps(myWorld.world())
+    return json.dumps(myWorld.world()), 200
 
 
 @app.route("/entity/<entity>")    
 def get_entity(entity):
     '''This is the GET version of the entity interface, return a representation of the entity'''
-    return json.dumps(myWorld.get(entity))
+    return json.dumps(myWorld.get(entity)), 200
 
 @app.route("/clear", methods=['POST','GET'])
 def clear():
     myWorld.clear()
-    return json.dumps(myWorld.world())
+    return json.dumps(myWorld.world()), 200
 
 if __name__ == "__main__":
     app.run(debug=True)
