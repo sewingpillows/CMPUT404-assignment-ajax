@@ -7,6 +7,8 @@ See requirements.org (plain-text) for a description of the project.
 
 Make a shared state AJAX drawing program
 
+Create a deep sea canvas with blobfish, anglerfish and bubbles!<br>
+
 Contributors / Licensing
 ========================
 
