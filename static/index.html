@@ -39,8 +39,8 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
         if (xhr.readyState==4) {
             try {
                 if (xhr.status==200) {
-                    //XXX: parse some JSON from the request!
-                    //XXX: Pass the data to the callback!
+                    var response = xhr.responseText;
+                    callback(JSON.parse(response));
                 }
             } 
             catch(e) {
@@ -48,6 +48,10 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
             }
         }
     };
+    xhr.open('POST', url);
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.send(JSON.stringify(objects));
     //XXX: POST to a URL
     //XXX: set the mimetype and the accept headers!
     // Remember to use application/json !
@@ -81,13 +85,12 @@ function deform(shape){
               midX, midY, rangeX, rangeY;
             for(let p=0; p<shape.length; p++){
                 newPoints.push(shape[p]);
-                endp = (p==shape.length)? p+1 : 0;
- {
+                endp = (p==shape.length-1)? 0 : p+1;
                 midX = mean(shape[p][0], shape[endp][0]);
                 midY = mean(shape[p][1], shape[endp][1]);
                 rangeX = Math.abs(shape[p][0]-shape[endp][0]);
                 rangeY = Math.abs(shape[p][1]-shape[endp][1]);
-                }
+            
               let newX = Math.floor((Math.random() * rangeX) + midX),
             newY = Math.floor((Math.random() * rangeY) + midY);
               newPoints.push([newX, newY]);
@@ -108,28 +111,53 @@ function draw(context, shape){
 }
 
 
+function rotatefunc(x, y, angle, shape) {
+    let newPoints = [];
+  var s = Math.sin(angle);
+  var c = Math.cos(angle);
+  for(let p=0; p<shape.length; p++){
+
+
+  // translate point back to origin:
+  p[0] -= x;
+  p[1] -= y;
+
+  // rotate point
+  var xnew = p[0] * c - p[1] * s;
+  var ynew = p[0] * s + p[1]* c;
+
+  // translate point back:
+  p[0] = xnew + x;
+  p[1] = ynew + c;
+
+  newPoints.push([p[0], p[1]]);
+  }
+  return newPoints;
+}
 
 
 //XXX: TODO Make this prettier!
 function drawCircle(context,entity) {
+    var x = entity["x"];
+    var y = entity["y"];
     with(context) {
         if ( !("shape" in entity)){
-        var x = entity["x"];
-        var y = entity["y"];
+
         console.log(x, y, 50);
         let shape = makeShape(x, y, 30);
         console.log(shape);
-        for (let i = 0; i<3; i++){
-        shape = deform(shape);
-        entity['rendered']= 'true';
-        entity['shape'] = shape;
+        for (let i = 0; i<8; i++){
+            shape = deform(shape);
         }
-    }
 
-        console.log(entity['shape']);
+        entity['rendered']= 'true';
+       
+        entity['shape'] = shape;
+
+    }  
+        context.globalAlpha = 0.2;
         draw(context, entity['shape']);
-}
-                            
+}                   
 }
 
 function prepEntity(entity) {
@@ -199,6 +227,7 @@ function getPosition(e) {
 function addEntity(entity, data) {
     world[entity] = data;
     drawNextFrame(); // (but should we?)
+    sendJSONXMLHTTPRequest("/entity/"+entity, data, drawNextFrame)
     //XXX: Send a XHTML Request that updates the entity you just  modified!
 
 }
