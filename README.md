@@ -9,6 +9,9 @@ Make a shared state AJAX drawing program
 
 Create a deep sea canvas with blobfish, anglerfish and bubbles!<br>
 
+![My image](https://raw.githubusercontent.com/sewingpillows/CMPUT404-assignment-ajax/master/screenshot.png)
+
+
 Contributors / Licensing
 ========================
 
