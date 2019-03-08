@@ -43,8 +43,10 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
         if (xhr.readyState==4) {
             try {
                 if (xhr.status==200) {
+                    if (callback){
                     var response = xhr.responseText;
                     callback(JSON.parse(response));
+                    }
                 }
             } 
             catch(e) {
@@ -67,8 +69,9 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
 world = {};
 
 ///get bubbles to appear randomly - by accident I discovered this
-// make them look like they are moving. 
-function randomBubble(x, y){
+// make them look like they are moving with the polling
+// Probably not perfect, but random enough for me. 
+function randomBubble(x, y) {
     var neg =  Math.floor(Math.random()*2) == 1 ? 1 : -1;
     var range =  Math.floor(Math.random()* 100 + 1);
     var xnew = Math.floor((Math.random() * x+(range*neg) + x));
@@ -181,10 +184,7 @@ function getPosition(e) {
 
 function addEntity(entity, data) {
     world[entity] = data;
-    drawNextFrame(); // (but should we?)
     sendJSONXMLHTTPRequest("/entity/"+entity, data, drawNextFrame)
-    //XXX: Send a XHTML Request that updates the entity you just  modified!
-
 }
 
 var counter = 0;
